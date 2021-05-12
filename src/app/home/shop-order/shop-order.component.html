@@ -1,0 +1,42 @@
+<div>
+  <nz-table #nestedTable [nzData]="lsOrder" [nzPageSize]="10">
+    <thead>
+      <tr>
+        <th></th>
+        <th>Mã Id</th>
+        <th>Mã Code</th>
+        <th>Tổng Tiền</th>
+      </tr>
+    </thead>
+    <tbody>
+      <ng-template ngFor let-data [ngForOf]="nestedTable.data">
+        <tr>
+          <td [(nzExpand)]="data.hadReviewForShop"></td>
+          <td>{{ data.id }}</td>
+          <td>{{ data.code }}</td>
+          <td>{{ data.paymentAmount }}</td>
+        </tr>
+        <tr [nzExpand]="data.hadReviewForShop">
+          <nz-table #innerTable [nzData]="data.orderDetails" nzSize="middle" [nzShowPagination]="false">
+            <thead>
+              <tr>
+                <th>OrderId</th>
+                <th>ProductName</th>
+                <th>ProductVariantId</th>
+                <th>Quantity</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let child of innerTable.data">
+                <td>{{ child.orderId }}</td>
+                <td>{{ child.productName }}</td>
+                <td>{{ child.productVariantId}}</td>
+                <td>{{ child.quantity }}</td>
+              </tr>
+            </tbody>
+          </nz-table>
+        </tr>
+      </ng-template>
+    </tbody>
+  </nz-table>
+</div>

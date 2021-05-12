@@ -1,0 +1,220 @@
+<nz-layout class="app-layout">
+  <nz-sider class="menu-sidebar" nzCollapsible nzWidth="256px" nzBreakpoint="md" [(nzCollapsed)]="isCollapsed"
+    [nzTrigger]="null">
+    <div class="sidebar-logo">
+      <a href="https://ng.ant.design/" target="_blank">
+        <img src="https://ng.ant.design/assets/img/logo.svg" alt="logo">
+        <h1>TShop</h1>
+      </a>
+    </div>
+    <div nz-menu nzTheme="dark" nzMode="inline" [nzInlineCollapsed]="isCollapsed">
+      <div nz-submenu nzOpen *ngIf="listAll" nzTitle="Tên shop" nzIcon="dashboard">
+        <ng-container *ngFor="let item1 of listAll.items">
+          <li nz-menu-item (click)='getIdShop(item1.id)'>
+            <span>{{ item1.name }}</span>
+          </li>
+        </ng-container>
+      </div>
+    </div>
+  </nz-sider>
+  <nz-layout>
+    <nz-header>
+      <div class="app-header">
+        <span class="header-trigger" (click)="isCollapsed = !isCollapsed">
+          <i class="trigger" nz-icon [nzType]="isCollapsed ? 'menu-unfold' : 'menu-fold'"></i>
+        </span>
+        <span style="margin-left: 5px; width: 100px;" class="header-trigger">
+          <i (click)="showChat()" class="fas fa-comment-dots"></i></span>
+      </div>
+    </nz-header>
+    <nz-content>
+      <div class="btn_getlist">
+        <button nz-button nzType="primary" class="btn_getproduct" (click)="productFlag()">Get Product For Shop</button>
+        <button nz-button nzType="primary" class="btn_getshop" (click)="orderFlag()">Get Order For Shop</button>
+      </div>
+      <div class="inner-content" *ngIf="idShop">
+        <app-shop-product *ngIf="flagProduct" [idShop]="idShop"></app-shop-product>
+        <app-shop-order *ngIf="flagOrder" [idShop]="idShop"></app-shop-order>
+        <div *ngIf="isConversation" class=" h-full w-full flex overflow-hidden">
+
+          <!-- cột trái -->
+          <div class="h-full w-full sm:w-1/4 bg-green-50 shadow overflow-hidden sm:flex flex flex-col "
+            [ngClass]="{'hidden':isShowConversation}">
+            <!-- thông tin người đáng đăng nhập -->
+            <div class="px-3 pt-3 pb-3 sm:px-6 w-full bg-green-600">
+              <div class="flex justify-between">
+                <div class="flex items-center">
+                  <div class="relative flex-shrink-0 h-10 w-10">
+                    <img class="h-10 w-10 rounded-full"
+                      src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=4&w=256&h=256&q=60"
+                      alt="">
+                    <span class="flex absolute h-3 w-3 top-8 right-1 -mt-1 -mr-1">
+                      <span
+                        class="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75"></span>
+                      <span class="relative inline-flex rounded-full h-3 w-3 border-white border-2 bg-green-400"></span>
+                    </span>
+                  </div>
+                  <button type="button" class="group ml-4 outline-none">
+                    <div class="text-sm font-medium text-white cursor-pointer">
+                      {{user.name}}
+                    </div>
+                  </button>
+                </div>
+                <div class="flex items-center justify-end">
+                  <div class=" flex items-center justify-center h-10 w-10  text-white cursor-pointer">
+                    <button type="button"
+                      class="ml-2 inline-block rounded-lg font-medium leading-none py-2 px-3 focus:outline-none text-white hover:bg-green-500 focus:bg-green-500">
+                      <i class="fas fa-envelope"></i>
+                    </button>
+
+                  </div>
+                  <div class=" flex items-center justify-center h-10 w-10  text-white cursor-pointer">
+                    <button type="button"
+                      class="ml-2 inline-block rounded-lg font-medium leading-none py-2 px-3 focus:outline-none text-white hover:bg-green-500 focus:bg-green-500">
+                      <i class="fas fa-user"></i>
+                    </button>
+
+                  </div>
+
+                  <div class="flex items-center justify-center h-10 w-10 text-white cursor-pointer ">
+                    <button type="button"
+                      class="group relative ml-2 inline-block rounded-lg font-medium leading-none py-2 px-3 focus:outline-none text-white hover:bg-green-500 focus:bg-green-500">
+                      <i class="fas fa-ellipsis-v"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- Tìm kiếm user -->
+            <div class="m-3.5 bg-white rounded shadow p-1 flex">
+              <span class="w-auto flex justify-end items-center text-gray-500 p-2">
+                <i class="fas fa-search"></i>
+              </span>
+              <input #SearchInput
+                class="form-control w-full pr-16 border-none placeholder-gray-500 placeholder-opacity-50 focus:outline-none focus:ring-2 focus:ring-white focus:border-transparent"
+                placeholder="Tìm kiếm người dùng">
+            </div>
+            <!-- danh sách conversation-->
+            <div class="w-full flex-auto overflow-hidden ">
+              <app-conversation *ngIf="isConversation" [lstData]="lstShopConversation"
+                (ConversationId)="onGetMessage($event)"></app-conversation>
+            </div>
+          </div>
+          <!-- cột phải -->
+          <div class="w-full h-full sm:w-3/4  sm:block overflow-hidden">
+            <!-- chat message -->
+            <div class="w-full h-full relative overflow-hidden" *ngIf="Conversation">
+              <div class="w-full h-full relative overflow-hidden">
+                <div class="flex flex-col w-full h-full overflow-hidden">
+                  <!-- header -->
+                  <div class="px-3 pt-3 pb-3 sm:px-6 w-full  bg-green-300">
+                    <div class="flex justify-between">
+                      <div class=" flex items-center sm:hidden justify-center h-10 w-10  text-white cursor-pointer">
+                        <button type="button"
+                          class="ml-2 inline-block rounded-lg font-medium leading-none py-2 px-3 focus:outline-none text-white hover:bg-green-500 focus:bg-green-500">
+                          <i class="fas fa-arrow-left"></i>
+                        </button>
+
+                      </div>
+                      <div class="flex items-center">
+                        <div class="flex-shrink-0 h-10 w-10">
+                          <img class="h-10 w-10 rounded-full"
+                            src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=4&w=256&h=256&q=60"
+                            alt="">
+                        </div>
+                        <div class="ml-4">
+                          <div class="text-sm font-medium text-gray-900">
+                            {{Conversation.nameConversation}}
+                          </div>
+                          <div class="text-sm text-gray-500">
+                            <!-- {{user.email}} -->
+                          </div>
+                        </div>
+                      </div>
+                      <div class="flex justify-end">
+                        <!-- icon -->
+
+                        <div class="flex items-center justify-center h-10 w-10  text-white cursor-pointer">
+                          <button type="button"
+                            class="ml-2 inline-block rounded-lg font-medium leading-none py-2 px-3 focus:outline-none text-white hover:bg-green-500 focus:bg-green-500">
+                            <i class="fas fa-phone-alt"></i>
+                          </button>
+
+                        </div>
+                        <div class="flex items-center justify-center h-10 w-10  text-white cursor-pointer">
+                          <button type="button"
+                            class="ml-2 inline-block rounded-lg font-medium leading-none py-2 px-3 focus:outline-none text-white hover:bg-green-500 focus:bg-green-500">
+                            <i class="fas fa-video"></i>
+                          </button>
+
+                        </div>
+                        <div class="flex items-center justify-center h-10 w-10  text-white cursor-pointer">
+
+                          <button type="button"
+                            class="ml-2 inline-block rounded-lg font-medium leading-none py-2 px-3 focus:outline-none text-white hover:bg-green-500 focus:bg-green-500">
+                            <i class="fas fa-info"></i>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+
+                  </div>
+                  <!-- body-->
+                  <div class=" w-full flex-auto overflow-hidden pt-2">
+                    <app-message [id]="user.id"></app-message>
+
+
+                  </div>
+                  <!--footer-->
+                  <div class="w-full  bg-green-300 mt-1">
+                    <form (ngSubmit)="sendMessage(Content)">
+                      <div class="flex justify-between">
+
+                        <!-- Attachment upload  -->
+                        <!-- <div class="flex items-center justify-center h-50 w-50  text-white cursor-pointer mr-3">
+                          <button type="button"
+                            class="ml-2 inline-block rounded-lg text-4xl leading-none py-2 px-3 focus:outline-none text-white hover:bg-green-500 focus:bg-green-500"
+                            (click)="selectAttachment.click()">
+                            <i class="fas fa-paperclip"></i>
+                          </button>
+                        </div>
+                        <input type='file' #selectAttachment style="display:none"> -->
+
+                        <!-- Image upload -->
+                        <!-- <div class="flex items-center justify-center h-50 w-50  text-white cursor-pointer mr-3">
+                          <button type="button"
+                            class="ml-2 inline-block rounded-lg text-4xl leading-none py-2 px-3 focus:outline-none text-white hover:bg-green-500 focus:bg-green-500"
+                            (click)="selectImages.click()">
+                            <i class="far fa-image"></i>
+                          </button>
+                        </div>
+                        <input type='file' #selectImages style="display:none"> -->
+
+                        <!-- input messaage -->
+                        <input type="text"
+                          class="flex-grow m-2 py-3  mr-1 rounded-full border border-gray-300 bg-gray-200 resize-none focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                          rows="1" placeholder="Type a message" name="Content" [(ngModel)]="Content"
+                          autocomplete="off" />
+
+                        <!-- <input class="focus:ring-2 focus:ring-green-600 focus:outline-none "> -->
+                        <div class="flex items-center justify-center h-50 w-50  text-white cursor-pointer mr-3">
+                          <button type="button"
+                            class="ml-2 inline-block rounded-lg text-4xl leading-none py-2 px-3 focus:outline-none text-white hover:bg-green-500 focus:bg-green-500"
+                            (click)="sendMessage(Content)">
+                            <i class="fab fa-telegram-plane"></i>
+                          </button>
+
+                        </div>
+                      </div>
+                    </form>
+
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </nz-content>
+  </nz-layout>
+</nz-layout>
