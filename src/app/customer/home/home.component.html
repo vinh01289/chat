@@ -66,7 +66,7 @@
     <!-- <app-search></app-search> -->
     <!-- danh sách conversation-->
     <div class="w-full flex-auto overflow-hidden">
-      <!-- <app-conversation ></app-conversation> -->
+      <app-conversation [lstData]="listConversationCustomer" (ConversationId)="onGetMessage($event)"></app-conversation>
     </div>
     <!-- danh sách bạn bè-->
     <div class="w-full flex-auto overflow-hidden">
@@ -74,13 +74,13 @@
     </div>
   </div>
   <!-- cột phải -->
-  <div>
+  <div [ngClass]="{'hidden':!isShowConversation}" class="w-full h-screen sm:w-3/4  sm:block overflow-hidden">
     <!-- wellcome -->
-    <div class="w-full h-full relative overflow-hidden">
+    <div class="w-full h-full relative overflow-hidden" *ngIf="!Conversation">
       <div class="flex items-end justify-center py-32">
         <div class="space-y-8">
           <h1 class="text-2xl">
-            Chào mừng <a class="text-green-500 font-black">{{user.name}}</a> đến với TShop !
+            <p>Chào mừng <a class="text-green-500 font-black">{{user.name}}</a> đến với TShop !</p>
           </h1>
         </div>
       </div>
@@ -128,42 +128,22 @@
         </div>
         <!-- body-->
         <div class=" w-full  flex-auto overflow-hidden pt-2">
-          <!-- <app-message></app-message> -->
-
-
+          <app-message [id]="user.id"></app-message>
         </div>
         <!--footer-->
         <div class="w-full  bg-green-300 mt-1">
-          <form >
+          <form (ngSubmit)="sendMessage(Content)">
             <div class="flex justify-between">
-
-              <!-- Attachment upload  -->
-              <div class="flex items-center justify-center h-50 w-50  text-white cursor-pointer mr-3">
-                <button type="button"
-                  class="ml-2 inline-block rounded-lg text-4xl leading-none py-2 px-3 focus:outline-none text-white hover:bg-green-500 focus:bg-green-500"
-                  (click)="selectAttachment.click()">
-                  <i class="fas fa-paperclip"></i>
-                </button>
-              </div>
-              <input type='file' #selectAttachment style="display:none">
-
-              <!-- Image upload -->
-              <div class="flex items-center justify-center h-50 w-50  text-white cursor-pointer mr-3">
-                <button type="button"
-                  class="ml-2 inline-block rounded-lg text-4xl leading-none py-2 px-3 focus:outline-none text-white hover:bg-green-500 focus:bg-green-500"
-                  (click)="selectImages.click()">
-                  <i class="far fa-image"></i>
-                </button>
-              </div>
-              <input type='file' #selectImages style="display:none">
-
               <!-- input messaage -->
-              <input type="text">
+              <input type="text"
+                class="flex-grow m-2 py-3  mr-1 rounded-full border border-gray-300 bg-gray-200 resize-none focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                rows="1" placeholder="Type a message" name="Content" [(ngModel)]="Content" autocomplete="off" />
 
               <!-- <input class="focus:ring-2 focus:ring-green-600 focus:outline-none "> -->
               <div class="flex items-center justify-center h-50 w-50  text-white cursor-pointer mr-3">
                 <button type="button"
-                  class="ml-2 inline-block rounded-lg text-4xl leading-none py-2 px-3 focus:outline-none text-white hover:bg-green-500 focus:bg-green-500">
+                  class="ml-2 inline-block rounded-lg text-4xl leading-none py-2 px-3 focus:outline-none text-white hover:bg-green-500 focus:bg-green-500"
+                  (click)="sendMessage(Content)">
                   <i class="fab fa-telegram-plane"></i>
                 </button>
 
@@ -176,5 +156,3 @@
     </div>
   </div>
 </div>
-        
-    

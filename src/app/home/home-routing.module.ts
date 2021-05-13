@@ -9,13 +9,9 @@ const routes: Routes = [
   { path:'', pathMatch: 'full',
   component: HomeComponent
   },
-  { path:'shop',component:HomeComponent, 
-    children:[
-      {path: 'login', component:LoginComponent}
-    ]
-  },
+  { path:'shop',component:HomeComponent},
   { path:'login',component:LoginComponent},
-  { path: 'conversation', component: ConversationComponent},
+  // { path: 'conversation', component: ConversationComponent},
 ];
 
 @NgModule({

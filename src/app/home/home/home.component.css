@@ -41,7 +41,7 @@
 }
 
 .trigger:hover {
-  color: #1890ff;
+  color: #6EE7B7;
 }
 
 .sidebar-logo {
@@ -97,4 +97,19 @@ nz-content {
 .fas.fa-comment-dots:hover{
   color: #1890ff;
   width: 200px;
+}
+.btn_getproduct.ant-btn.ant-btn-primary{
+  background-color: #6EE7B7;
+  border-color:white;
+  color:black;
+  font-size: 15px;
+}
+.btn_getshop.ant-btn.ant-btn-primary{
+  background-color: #6EE7B7;
+  border-color:white;
+  color:black;
+  font-size: 15px;
+}
+.ant-menu-item.ng-star-inserted.ant-menu-item-selected{
+  background-color:#6EE7B7;
 }

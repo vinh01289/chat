@@ -1,6 +1,9 @@
 import { Injectable } from '@angular/core';
 import { Observable, Subscriber } from 'rxjs';
 import { environment } from 'src/environments/environment';
+import { Token } from '../model/token';
+import * as io from 'socket.io-client'; 
+import { HttpHeaders } from '@angular/common/http';
 import { AuthService } from './auth-service.service';
 
 @Injectable({
@@ -9,26 +12,30 @@ import { AuthService } from './auth-service.service';
 export class SocketService {
   socketUrl = environment.apiUrl.socketUrl;
   socket: any;
-  user: any;
+  token: Token;
 
-  constructor(public authen: AuthService) {
-   this.user = this.authen.getCurrentUser();
-   if(this.user){
-    this.socket = io(`${this.socketUrl}?userId=${this.user.id}`);
-   }
-    // this.authen.getUserChange().subscribe((res: any) => {
+  constructor(public auth: AuthService) {
+    // debugger;
+   this.auth.currentToken$.subscribe(token => this.token = token);
 
-    //   console.log('getUserChange', this.socket);
-    //   if (res){
-    //     this.user = res;
-    //     console.log('userid', this.user.id);
+   if (this.token) {
+      debugger
+        this.initSocket();
 
-    //     this.socket = io(`${this.socketUrl}?userId=${this.user.id}`);
-    //   }
-    // });
   }
 
-
+  }
+  initSocket(): void{
+    // debugger;
+    this.socket = io(`${this.socketUrl}`);
+    this.socket.on('connect', () => {
+      this.socket.emit('authenticate', this.token.accessToken);
+      console.log('socket',this.socket.id); // x8WIv7-mJelg7on_ALbx
+    });
+  }
+  disconnectSocket(): void{
+    this.socket.close();
+     }
   /**
    * @description listen data from event
    * @param eventName name of event
@@ -42,13 +49,7 @@ export class SocketService {
       });
     });
   }
-  // public videoCallRejected(toId): void {
-  //   this.socket.emit('video-call-reject', {
-  //      toId
-  //    });
-  // }
 }
-function io(arg0: string): any {
-  throw new Error('Function not implemented.');
-}
+
+
 

@@ -16,6 +16,7 @@ export class AuthService {
   
   private currentTokenSource = new BehaviorSubject<Token>(null);
   private currentUserSource = new ReplaySubject<UserProfile>(1);
+  currentToken$ = this.currentTokenSource.asObservable();
   private authLogOut = new BehaviorSubject<boolean>(false);
   public Token: string;
   jwtHelper = new JwtHelperService();
@@ -101,6 +102,9 @@ export class AuthService {
       headers = headers.set('Authorization', `Bearer ${token.accessToken}`);
   
       return this.http.get(`${environment.apiUrl.chatUrl}api/v1/users/get-profile-user`, {headers})
+    }
+    onLogOut(): Observable<boolean> {
+      return this.authLogOut.asObservable();
     }
 }
 

@@ -8,10 +8,11 @@ import { ShareModule } from 'src/shared/share.module';
 import { HomeComponent } from './home/home.component';
 import { LoginComponent } from './login/login/login.component';
 import { ConversationComponent } from './chat/conversation/conversation.component';
+import { MessageComponent } from './chat/message/message.component';
 
 
 @NgModule({
-  declarations: [HomeComponent, LoginComponent,ConversationComponent ],
+  declarations: [HomeComponent, LoginComponent,ConversationComponent, MessageComponent ],
   imports: [
     CommonModule,
     CustomerRoutingModule,
@@ -19,7 +20,7 @@ import { ConversationComponent } from './chat/conversation/conversation.componen
     ReactiveFormsModule,
     DemoNgZorroAntdModule,
     ShareModule,
-    CommonModule
+    CommonModule,
   ]
 })
 export class CustomerModule { }

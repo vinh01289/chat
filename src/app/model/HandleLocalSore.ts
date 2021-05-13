@@ -1,7 +1,7 @@
 export const Constant = {
     LOCALVARIABLENAME: {
         accessToken: 'accessToken',
-        // refreshToken: 'refreshToken',
+        refreshToken: 'refreshToken',
         // smsOtpToken: 'smsOtpToken'
     }
 };
@@ -11,9 +11,9 @@ export const HandleLocalStore = {
         localStorage.setItem(Constant.LOCALVARIABLENAME.accessToken, accessToken);
     },
 
-    // writerefreshToken: (refreshToken) => {
-    //     localStorage.setItem(Constant.LOCALVARIABLENAME.refreshToken, refreshToken);
-    // },
+    writerefreshToken: (refreshToken) => {
+        localStorage.setItem(Constant.LOCALVARIABLENAME.refreshToken, refreshToken);
+    },
     // writesmsOtpToken: (smsOtpToken) => {
     //     localStorage.setItem(Constant.LOCALVARIABLENAME.smsOtpToken, smsOtpToken);
     // },

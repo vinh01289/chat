@@ -14,7 +14,6 @@ export class MessageComponent implements OnInit {
   }
   ngOnInit(): void {
     this.scrollToBottom();
-    console.log('list message in message', this.chatService.listMessage);
   }
 
   // tslint:disable-next-line:use-lifecycle-interface

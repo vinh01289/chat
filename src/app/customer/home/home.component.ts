@@ -32,20 +32,21 @@ export class HomeComponent implements OnInit {
    }
 
   ngOnInit(): void {
-    
+    if(!this.auth.loginIn()){
+      this.router.navigate(['customer/login']);
+    }
     let token = {} as Token;
     token.accessToken  = localStorage.getItem('accessToken');
     token.refreshToken  = localStorage.getItem('refreshToken');
     this.auth.loadCurrentUser(token).subscribe((res: UserProfile) => {
       if (res) {
           this.user = res;
-          
           console.log("this.user",this.user);
         }
       }
     );
     
-   
+    this.p_getChat();
     //  this.chatService.getConversation();
     this.chatService.getConversationCustomer().subscribe(res=>{
       this.listConversationCustomer = res;
@@ -82,6 +83,22 @@ export class HomeComponent implements OnInit {
           this.chatService.listMessage = [...this.chatService.listMessage, ...[customObj]];
         });
     }
+  }
+  private p_getChat(): void {
+    this.socketService.listen('chat').subscribe(data => {
+      if (this.Conversation != null && data.conversationId === this.Conversation.conversationId) {
+        // this.chatService.listMessage.filter(res => {
+        //   if (res.id !== data.messageId) {
+        //     this.chatService.listMessage = [...this.chatService.listMessage, ...[data]];
+        //   }
+        // });
+        const exist = this.chatService.listMessage.filter(res => res.id === data.id)[0];
+        if (!exist) {
+          this.chatService.listMessage = [...this.chatService.listMessage, ...[data]];
+        }
+      }
+      this.chatService.getConversationCustomer();
+    });
   }
   
 }

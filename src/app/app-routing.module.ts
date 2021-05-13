@@ -3,7 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { ConversationComponent } from './home/chat/conversation/conversation.component';
 import { HomeComponent } from './home/home/home.component';
 import { LoginComponent } from './home/login/login/login.component';
-import { AuthloginService } from './services/authloginservice.service';
+import { AuthloginService } from './services/auth.guard';
 
 const routes: Routes = [
   { path: '', pathMatch : 'full', redirectTo: '/shop' },
@@ -20,16 +20,20 @@ const routes: Routes = [
     loadChildren: () => import('./customer/customer.module').then(m => m.CustomerModule),
   },
   {path: 'shop',
-    canActivate: [AuthloginService],
+    canActivate: [],
     component: HomeComponent,
     children: [
       { path:'login', component:LoginComponent},
-      { path: 'Home', component: HomeComponent },
+      { path: 'home', component: HomeComponent },
       { path: 'conversation', component: ConversationComponent},
     ],
   },
-  // { path: 'customer', component: HomeComponent, children: [
-  //     { path: 'Home', component: HomeComponent},
+  // { path: 'customer',
+  //   canActivate: [AuthloginService],
+  //   component: HomeComponent,
+  //   children: [
+  //     {path: 'login', component: LoginComponent},
+  //     { path: 'home', component: HomeComponent},
   //     { path:'conversation', component: ConversationComponent},
   //   ],
   // },
