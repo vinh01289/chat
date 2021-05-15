@@ -11,7 +11,7 @@ export const environment = {
     accountUrl: 'https://account.tpos.dev/',
     socketUrl: 'http://192.168.3.113:3000',
     tShopUrl: 'https://tshop.tpos.dev/',
-    chatUrl: 'https://tdesk.tpos.dev/'
+    chatUrl: 'http://192.168.3.113/'
   }
 };
 

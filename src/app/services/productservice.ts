@@ -6,7 +6,7 @@ import { environment } from 'src/environments/environment';
 import { orderDto } from '../model/orderDto';
 import { Pagination } from '../model/Pagination';
 import { ProductDto } from '../model/productDto';
-import { AuthService } from './auth-service.service';
+import { AuthService } from './auth.service';
 
 @Injectable({
   providedIn: 'root'

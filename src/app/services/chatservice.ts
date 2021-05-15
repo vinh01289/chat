@@ -10,6 +10,7 @@ import {  UserProfile } from '../model/user';
 import { Conversation } from '../model/conversation';
 import { shopDto } from '../model/shopDto';
 import { Message } from '../model/message';
+import { SocketService } from './socket.service';
 
 @Injectable({
   providedIn: 'root'
@@ -26,7 +27,7 @@ export class ChatService {
   changeData(): Observable<any>{
     return this.listConversation.asObservable();
   }
-  constructor(private router: Router, private http: HttpClient){
+  constructor(private router: Router, private http: HttpClient, private socketService: SocketService){
     this.listConversation = new BehaviorSubject<Conversation[]>([]);
     this.listShop= new BehaviorSubject<shopDto[]>([]);
   }
@@ -58,39 +59,38 @@ export class ChatService {
       this.listShop.next(res);
     });
   }
-  sentMessage(content: string, conversationId: string , messageType: number): Observable<any>{
-    const reqHeader = new HttpHeaders({
-      'Authorization': `Bearer ${this.getToken()}`
-    });
+  sentMessage(content: string, type: string, conversationId: string, messageType: number, attachmentIds: string[]): Observable<any> {
+    const socketId = this.socketService.socket?.id;
     return new Observable(obs => {
-    this.http.post(`${environment.apiUrl.chatUrl}api/v1/messages`, {
-      content,
-      conversationId,
-      messageType
-    }, { headers: reqHeader , responseType: 'text'} ).subscribe(res => {
-      obs.next(res);
-      obs.complete();
-    }, er => {
-       obs.error('Loi');
-       obs.complete();
+      this.http.post(`${environment.apiUrl.chatUrl}api/v1/messages`, {
+        content,
+        type,
+        conversationId,
+        messageType,
+        attachmentIds,
+        socketId
+      }, { responseType: 'text' }).subscribe(res => {
+        obs.next(res);
+        obs.complete();
+      }, er => {
+        obs.error('Loi');
+        obs.complete();
+      });
     });
-    }) ;
   }
   getConversationShop(idShop: string): Observable<any>{
     var reqHeader = new HttpHeaders({
-      // 'Content-Type': 'application/json',
       'Authorization': `Bearer ${this.token}`
     });
     return this.http.get(`${environment.apiUrl.chatUrl}api/v1/conversation/list-shop-conversation/${idShop}`, { headers: reqHeader });
   }
 
-  getConversationCustomer(): Observable<any>{
-   
-    var reqHeader = new HttpHeaders({
-      // 'Content-Type': 'application/json',
-      'Authorization': `Bearer ${this.token}`
-    });
-    return this.http.get(`${environment.apiUrl.chatUrl}api/v1/conversation?isPublic=true`, { headers: reqHeader });
+  getConversation(): void{
+    this.http.get(`${environment.apiUrl.chatUrl}api/v1/conversation?isPublic=true`).subscribe(
+      (res: Conversation[]) =>{
+        this.listConversation.next(res);
+      }
+    );
   }
 }
 

@@ -20,6 +20,7 @@
             class="text-sm font-medium text-white  group-hover:text-white">
             {{item.nameConversation}}
           </div>
+          
           <div class="text-sm group-hover:text-white"
             [ngClass]="{'text-gray-50':item.conversationId === activeElement == true,'text-gray-500':!item.conversationId === activeElement}">
             {{item.lastMessage.value}}

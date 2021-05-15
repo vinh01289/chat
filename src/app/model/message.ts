@@ -1,6 +1,9 @@
+import { Attachment } from "./attachment";
+
 export class Message {
     id: string;
     content: string;
+    type: string;
     conversationId: string;
     receiverName: string;
     senderId: string;
@@ -9,4 +12,5 @@ export class Message {
     status: string;
     messageType: number;
     receiverId: string;
+    attachmentDto: Attachment[];
 }

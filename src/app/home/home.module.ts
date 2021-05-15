@@ -9,24 +9,21 @@ import { ShopProductComponent } from './shop-product/shop-product.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ConversationComponent } from './chat/conversation/conversation.component';
 import { ShareModule } from 'src/shared/share.module';
-import { ChatcustomerComponent } from './chat/chatcustomer/chatcustomer.component';
-import { LoginComponent } from './login/login/login.component';
 import { MessageComponent } from './chat/message/message.component';
+import { LoginModule } from '../login/login.module';
 
 
 
 @NgModule({
   declarations: [
-    HomeComponent,
-    ShopOrderComponent,
-    ShopProductComponent,
-    ConversationComponent,
-    ChatcustomerComponent,
-    LoginComponent,
-    MessageComponent
+    // HomeComponent,
+    // ShopOrderComponent,
+    // ShopProductComponent,
+    // ConversationComponent,
+    // MessageComponent,
   ],
   
-  exports:[HomeComponent],
+  exports:[],
   imports: [
     CommonModule,
     FormsModule,
@@ -34,7 +31,7 @@ import { MessageComponent } from './chat/message/message.component';
     HomeRoutingModule,
     DemoNgZorroAntdModule,
     ShareModule,
-    CommonModule
+    LoginModule,
   ]
 })
 export class HomeModule { }

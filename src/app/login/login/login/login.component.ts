@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ErrorLogin } from 'src/app/model/error'
 import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, NgForm, Validators } from '@angular/forms';
-import { AuthService } from 'src/app/services/auth-service.service';
+import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
   selector: 'app-login',
@@ -49,7 +49,10 @@ export class LoginComponent implements OnInit {
 
     this.auth.login(phonenumber, password)
     .subscribe(res => {
-      this.router.navigate(['shop']);
+      this.auth.getProfile().subscribe(res=>{
+        this.router.navigate(['shop']);
+      })
+      
     },
     error => {
       console.log('Lỗi đăng nhập', error);

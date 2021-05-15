@@ -1,9 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { ConversationComponent } from './chat/conversation/conversation.component';
-// import { ShopComponent } from '../shop/shop/shop.component';
+import { LoginComponent } from '../login/login/login/login.component';
 import { HomeComponent } from './home/home.component';
-import { LoginComponent } from './login/login/login.component';
 
 const routes: Routes = [
   { path:'', pathMatch: 'full',
@@ -11,7 +9,6 @@ const routes: Routes = [
   },
   { path:'shop',component:HomeComponent},
   { path:'login',component:LoginComponent},
-  // { path: 'conversation', component: ConversationComponent},
 ];
 
 @NgModule({

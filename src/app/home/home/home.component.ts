@@ -7,7 +7,7 @@ import { Conversation } from 'src/app/model/conversation';
 import { SocketService } from 'src/app/services/socket.service';
 import { ChatService } from 'src/app/services/chatservice';
 import { ConversationComponent } from '../chat/conversation/conversation.component';
-import { AuthService } from 'src/app/services/auth-service.service';
+import { AuthService } from 'src/app/services/auth.service';
 import { shopService } from 'src/app/services/shopservice.service';
 import { shopDto } from 'src/app/model/shopDto';
 import { Message } from 'src/app/model/message';
@@ -21,62 +21,57 @@ import { Token } from 'src/app/model/token';
 export class HomeComponent implements OnInit {
   user: UserProfile;
   isCollapsed = false;
-  listAll : any;
-  lsOrder:orderDto[]=[];
+  listAll: any;
+  lsOrder: orderDto[] = [];
   idShop: string;
   isShopOrder = false;
-  isConversation = false;
+  isConversation = true;
   Conversation: Conversation;
-  lstShopConversation : Conversation;
+  lstShopConversation: Conversation;
   lstShop: shopDto;
   isShowConversation = false;
   Content: string;
   flagProduct = false;
   flagOrder = false;
-    // callingInfo = { name: '', content: '', type: '' };
-    // receiverId: string;
-    // showModal = false;
-    // phoneNumber: string;
+  // callingInfo = { name: '', content: '', type: '' };
+  // receiverId: string;
+  // showModal = false;
+  // phoneNumber: string;
   @ViewChild(ConversationComponent) conversationComponent: ConversationComponent;
-    // @ViewChild(SearchComponent) searchComponent: SearchComponent;
+  // @ViewChild(SearchComponent) searchComponent: SearchComponent;
 
-  constructor(private auth: AuthService, public chatService: ChatService,private socketService: SocketService, private route: ActivatedRoute, private router: Router, private shopservice: shopService) {
+  constructor(private auth: AuthService, public chatService: ChatService, private socketService: SocketService, private route: ActivatedRoute, private router: Router, private shopservice: shopService) {
     this.chatService.changeDataListShop().subscribe(res => {
-      this.lstShop=res;
+      this.lstShop = res;
     });
-   }
+  }
 
   ngOnInit(): void {
-    if(!this.auth.loginIn()){
-      this.router.navigate(['shop/login']);
-    }
-    let token = {} as Token;
-    token.accessToken  = localStorage.getItem('accessToken');
-    token.refreshToken  = localStorage.getItem('refreshToken');
-    this.auth.loadCurrentUser(token).subscribe((res: UserProfile) => {
-      if (res) {
-          this.user = res;
-          
-          console.log("this.user",this.user);
-        }
-      }
-    );
-    console.log("kak")
     this.p_getChat();
-     this.getAllList();
-     this.getIdShop(this.idShop);
-    //  this.chatService.getConversation();
-     this.getConversationShop();
-     this.onGetMessage(this.Conversation);
-     
+    let token = {} as Token;
+    token.accessToken = localStorage.getItem('accessToken');
+    token.refreshToken = localStorage.getItem('refreshToken');
+    this.auth.currentUser$.subscribe(
+      (res) => {
+        this.user = res;
+        console.log('user', this.user);
+      }
+    )
+    this.idShop = this.route.snapshot.paramMap.get('idShop');
+    this.chatService.getConversationShop(this.idShop);
+    this.getAllList();
+    this.getIdShop(this.idShop);
+    // this.chatService.getConversationShop(this.idShop);
+    this.onGetMessage(this.Conversation);
   }
-  getAllList(){
-    this.shopservice.getList().subscribe(res=>{
+  getAllList() {
+    this.shopservice.getList().subscribe(res => {
+      console.log("list", res);
       this.listAll = res;
     })
   }
-  
-  getIdShop(idShop: string){
+
+  getIdShop(idShop: string) {
     this.flagProduct = false;
     this.flagOrder = true;
     this.idShop = idShop;
@@ -116,16 +111,16 @@ export class HomeComponent implements OnInit {
     });
   }
 
-  showChat(): void{
-    this.flagOrder= false;
+  showChat(): void {
+    this.flagOrder = false;
     this.isConversation = true;
-    this.flagProduct= false;
+    this.flagProduct = false;
     this.getConversationShop();
   }
-  getConversationShop(){
+  getConversationShop() {
     this.chatService.getConversationShop(this.idShop).subscribe(res => {
-        this.lstShopConversation= res;
-        console.log("lstConversation",this.lstShopConversation)
+      this.lstShopConversation = res;
+      console.log("lstConversation", this.lstShopConversation)
     });
   }
   sendMessage(content: string): void {
@@ -133,37 +128,32 @@ export class HomeComponent implements OnInit {
       return;
     }
     if (this.Conversation.conversationId) {
-      const customObj = new Message();
-      customObj.content = content;
-      customObj.conversationId = this.Conversation.conversationId;
-      customObj.senderId = this.user.id;
-      customObj.messageType = 0;
-      this.chatService.sentMessage(customObj.content, customObj.conversationId, customObj.messageType).
+      const message = {} as Message;
+      message.content = content;
+      message.conversationId = this.Conversation.conversationId;
+      message.senderId = this.user.id;
+      message.messageType = 0;
+      message.type = 'text';
+
+      this.chatService.sentMessage(message.content, message.type, message.conversationId, message.messageType, null).
         subscribe(res => {
           this.Content = null;
           // this.chatService.getConversation();
-          // console.log(1);
-          this.chatService.listMessage = [...this.chatService.listMessage, ...[customObj]];
+          this.chatService.listMessage = [...this.chatService.listMessage, ...[message]];
         });
     }
   }
   private p_getChat(): void {
     this.socketService.listen('chat').subscribe(data => {
-      console.log("scoket", data);
       if (this.Conversation != null && data.conversationId === this.Conversation.conversationId) {
-        // this.chatService.listMessage.filter(res => {
-        //   if (res.id !== data.messageId) {
-        //     this.chatService.listMessage = [...this.chatService.listMessage, ...[data]];
-        //   }
-        // });
-        const exist = this.chatService.listMessage.filter(res => res.id === data.id)[0];
-        if (!exist) {
+        if (this.socketService.socket.id !== data.socketId) {
           this.chatService.listMessage = [...this.chatService.listMessage, ...[data]];
         }
       }
       this.chatService.getConversationShop(this.idShop);
+
     });
   }
-  
+
 }
 
