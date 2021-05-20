@@ -78,21 +78,41 @@ export class ChatService {
       });
     });
   }
+  sendOrder(orderId: string, conversationId: string, apiUrlChat: string): Observable<any>{
+    const socketId = this.socketService.socket?.id;
+    var reqHeader = new HttpHeaders({
+      'Authorization': `Bearer ${this.token}`
+    });
+    return new Observable( obs => {
+      this.http.post(`${environment.apiUrl.tShopUrl}/api/v1/app-chat/sent-order`,
+      { 
+        orderId,
+        conversationId,
+        apiUrlChat,
+        socketId
+      }, 
+      { responseType: 'text' }).subscribe(res=>{
+        obs.next(res);
+        obs.complete();
+      }, er=>{
+        obs.error('Lỗi');
+        obs.complete();
+      });
+    });
+  }
   getConversationShop(idShop: string): Observable<any>{
     var reqHeader = new HttpHeaders({
-      // 'Content-Type': 'application/json',
       'Authorization': `Bearer ${this.token}`
     });
     return this.http.get(`${environment.apiUrl.chatUrl}api/v1/conversation/list-shop-conversation/${idShop}`, { headers: reqHeader });
   }
 
-  getConversationCustomer(): Observable<any>{
-   
-    var reqHeader = new HttpHeaders({
-      // 'Content-Type': 'application/json',
-      'Authorization': `Bearer ${this.token}`
-    });
-    return this.http.get(`${environment.apiUrl.chatUrl}api/v1/conversation?isPublic=true`, { headers: reqHeader });
+  getConversation(): void{
+    this.http.get(`${environment.apiUrl.chatUrl}api/v1/conversation?isPublic=true`).subscribe(
+      (res: Conversation[]) =>{
+        this.listConversation.next(res);
+      }
+    );
   }
 }
 

@@ -78,6 +78,28 @@ export class ChatService {
       });
     });
   }
+  sendMessageOrder(orderId: string, conversationId: string, apiUrlChat: string): Observable<any>{
+    const socketId = this.socketService.socket?.id;
+    var reqHeader = new HttpHeaders({
+      'Authorization': `Bearer ${this.token}`
+    });
+    return new Observable( obs => {
+      this.http.post(`${environment.apiUrl.tShopUrl}/api/v1/app-chat/sent-order`,
+      { 
+        orderId,
+        conversationId,
+        apiUrlChat,
+        socketId
+      }, 
+      { responseType: 'text' }).subscribe(res=>{
+        obs.next(res);
+        obs.complete();
+      }, er=>{
+        obs.error('Lỗi');
+        obs.complete();
+      });
+    });
+  }
   getConversationShop(idShop: string): Observable<any>{
     var reqHeader = new HttpHeaders({
       'Authorization': `Bearer ${this.token}`

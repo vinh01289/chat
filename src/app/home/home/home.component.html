@@ -33,6 +33,7 @@
         <button nz-button nzType="primary" class="btn_getshop" (click)="orderFlag()">Get Order For Shop</button>
       </div>
       <div class="inner-content" *ngIf="idShop">
+
         <app-shop-product *ngIf="flagProduct" [idShop]="idShop"></app-shop-product>
         <app-shop-order *ngIf="flagOrder" [idShop]="idShop"></app-shop-order>
         <div *ngIf="isConversation" class=" h-full w-full flex overflow-hidden">
@@ -95,16 +96,20 @@
                 placeholder="Tìm kiếm người dùng">
             </div>
             <!-- danh sách conversation-->
-            <div class="w-full flex-auto overflow-hidden"  *ngIf="isConversation">
-              <app-conversation [lstData]="lstShopConversation"
-                (ConversationId)="onGetMessage($event)"></app-conversation>
+            <div class="w-full flex-auto overflow-hidden" *ngIf="isConversation">
+              <app-conversation [lstData]="lstShopConversation" (ConversationId)="onGetMessage($event)">
+              </app-conversation>
             </div>
           </div>
           <!-- cột phải -->
           <div class="w-full h-full sm:w-3/4  sm:block overflow-hidden">
+
             <!-- chat message -->
+
             <div class="w-full h-full relative overflow-hidden" *ngIf="Conversation">
+
               <div class="w-full h-full relative overflow-hidden">
+
                 <div class="flex flex-col w-full h-full overflow-hidden">
                   <!-- header -->
                   <div class="px-3 pt-3 pb-3 sm:px-6 w-full  bg-green-300">
@@ -162,13 +167,64 @@
                   <!-- body-->
                   <div class=" w-full flex-auto overflow-hidden pt-2">
                     <app-message [id]="user.id"></app-message>
-
-
                   </div>
                   <!--footer-->
                   <div class="w-full  bg-green-300 mt-1">
+
                     <form (ngSubmit)="sendMessage(Content)">
                       <div class="flex justify-between">
+                        <div class="mt-1 ml-1">
+                          <button (click)="showModalOrder()"
+                            class="ml-2 inline-block rounded-lg text-4xl leading-none py-2 px-3 focus:outline-none text-white hover:bg-green-500 focus:bg-green-500"><span>
+                              <i class="fas fa-file-invoice-dollar"></i>
+                            </span></button>
+                          <div>
+                            <nz-modal nzWidth="800px" [(nzVisible)]="showOrder" nzTitle="Phiếu bán hàng"
+                              (nzOnCancel)="handleCancel()" (nzOnOk)="handleOk()" [nzOkText]="null" nzCanceText="Đóng">
+                              <ng-container *nzModalContent>
+                                <div class="ml-3 mt-0 m-3.5 bg-white rounded shadow p-1 flex">
+                                  <span class="w-auto flex justify-end items-center text-gray-500 p-2">
+                                    <i class="fas fa-search"></i>
+                                  </span>
+                                  <input #SearchInput
+                                    class="form-control w-full pr-16 border-none placeholder-gray-500 placeholder-opacity-50 focus:outline-none focus:ring-2 focus:ring-white focus:border-transparent"
+                                    placeholder="Tìm kiếm đơn hàng">
+                                </div>
+                                <nz-table #basicTable [nzData]="lsOrder" nzWidth="700px">
+                                  <thead>
+                                    <tr>
+                                      <th >Thao tác</th>
+                                      <th style="text-align: center;">Code</th>
+                                      <th style="text-align: center;">Tổng tiền</th>
+                                      <th style="text-align: center;">Trạng thái</th>
+                                      <th style="text-align: center;">Ngày tạo</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    <tr *ngFor="let data of basicTable.data" style="text-align: center;">
+                                      <td>
+                                        <button class="rounded-lg text-2xl leading-none py-2 px-3 focus:outline-none hover:bg-green-200 focus:bg-green-200 ">
+                                          <i nz-icon nzType="edit" nzTheme="outline"></i>
+                                        </button>
+                                        <button
+                                          class="rounded-lg text-2xl leading-none py-2 px-3 focus:outline-none hover:bg-green-200 focus:bg-green-200 ">
+                                          <i class="fab fa-telegram-plane"></i>
+                                        </button>
+                                      </td>
+                                      <td>{{data.code}}</td>
+                                      <td>{{data.paymentAmount}}</td>
+                                      <td>{{data.status}}</td>
+                                      <td>{{data.creationTime}}</td>
+                                      <td>
+                                        <nz-divider nzType="vertical"></nz-divider>
+                                      </td>
+                                    </tr>
+                                  </tbody>
+                                </nz-table>
+                              </ng-container>
+                            </nz-modal>
+                          </div>
+                        </div>
                         <!-- <app-attachment [conversationId]="Conversation.conversationId" class="flex justify-between"></app-attachment> -->
                         <!-- input messaage -->
                         <input type="text"
@@ -177,7 +233,7 @@
                           autocomplete="off" />
 
                         <!-- <input class="focus:ring-2 focus:ring-green-600 focus:outline-none "> -->
-                        <div class="flex items-center justify-center h-50 w-50  text-white cursor-pointer mr-3">
+                        <div>
                           <button type="button"
                             class="ml-2 inline-block rounded-lg text-4xl leading-none py-2 px-3 focus:outline-none text-white hover:bg-green-500 focus:bg-green-500"
                             (click)="sendMessage(Content)">
@@ -192,6 +248,7 @@
                 </div>
               </div>
             </div>
+
           </div>
         </div>
       </div>

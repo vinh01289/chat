@@ -3,15 +3,15 @@ import { UserProfile } from 'src/app/model/user';
 import { ActivatedRoute, Router } from '@angular/router';
 import { orderDto } from 'src/app/model/orderDto';
 import { Conversation } from 'src/app/model/conversation';
-
 import { SocketService } from 'src/app/services/socket.service';
-import { ChatService } from 'src/app/services/chatservice';
 import { ConversationComponent } from '../chat/conversation/conversation.component';
 import { AuthService } from 'src/app/services/auth.service';
 import { shopService } from 'src/app/services/shopservice.service';
+import { orderService } from 'src/app/services/orderService.service';
 import { shopDto } from 'src/app/model/shopDto';
 import { Message } from 'src/app/model/message';
 import { Token } from 'src/app/model/token';
+import { ChatService } from 'src/app/services/chatservice';
 
 @Component({
   selector: 'app-home',
@@ -33,6 +33,8 @@ export class HomeComponent implements OnInit {
   Content: string;
   flagProduct = false;
   flagOrder = false;
+  showOrder =  false;
+  order: orderDto;
   // callingInfo = { name: '', content: '', type: '' };
   // receiverId: string;
   // showModal = false;
@@ -40,7 +42,8 @@ export class HomeComponent implements OnInit {
   @ViewChild(ConversationComponent) conversationComponent: ConversationComponent;
   // @ViewChild(SearchComponent) searchComponent: SearchComponent;
 
-  constructor(private auth: AuthService, public chatService: ChatService, private socketService: SocketService, private route: ActivatedRoute, private router: Router, private shopservice: shopService) {
+  constructor(private auth: AuthService, public chatService: ChatService, private socketService: SocketService, private route: ActivatedRoute, private router: Router, private shopservice: shopService,
+     private orderService: orderService) {
     this.chatService.changeDataListShop().subscribe(res => {
       this.lstShop = res;
     });
@@ -76,6 +79,14 @@ export class HomeComponent implements OnInit {
     this.flagOrder = true;
     this.idShop = idShop;
     this.isConversation = false;
+    this.idShop = idShop;
+    if (this.idShop != null)
+    {
+      this.orderService.getListOrder(idShop).subscribe((res: any)=>{
+        console.log(res);
+          this.lsOrder = res.items;
+      });
+    }
   }
 
   public orderFlag() {
@@ -115,9 +126,9 @@ export class HomeComponent implements OnInit {
     this.flagOrder = false;
     this.isConversation = true;
     this.flagProduct = false;
-    this.getConversationShop();
+    this.getConversationShop(this.idShop);
   }
-  getConversationShop() {
+  getConversationShop(idShop:string): void {
     this.chatService.getConversationShop(this.idShop).subscribe(res => {
       this.lstShopConversation = res;
       console.log("lstConversation", this.lstShopConversation)
@@ -140,6 +151,25 @@ export class HomeComponent implements OnInit {
           this.Content = null;
           // this.chatService.getConversation();
           this.chatService.listMessage = [...this.chatService.listMessage, ...[message]];
+
+        });
+    }
+  }
+  sendMessageOrder(apiUrlChat: string): void {
+    if (this.Conversation.conversationId) {
+      const message = {} as Message;
+      const order = {} as orderDto;
+      order.id = this.order.id;
+      message.conversationId = this.Conversation.conversationId;
+      message.senderId = this.user.id;
+      message.type = 'text';
+      apiUrlChat = 'http://192.168.3.113/'
+
+      this.chatService.sendMessageOrder(order.id, message.conversationId, message.senderId).
+        subscribe(res => {
+          // this.chatService.getConversation();
+          this.chatService.listMessage = [...this.chatService.listMessage, ...[message]];
+
         });
     }
   }
@@ -150,10 +180,20 @@ export class HomeComponent implements OnInit {
           this.chatService.listMessage = [...this.chatService.listMessage, ...[data]];
         }
       }
-      this.chatService.getConversationShop(this.idShop);
-
+      this.getConversationShop(this.idShop);
     });
   }
 
+  showModalOrder(): void {
+    this.showOrder = true;
+  }
+  handleOk(): void {
+    console.log('Button ok clicked!');
+    this.showOrder = false;
+  }
+  handleCancel(): void {
+    console.log('Button cancel clicked!');
+    this.showOrder = false;
+  }
 }
 
